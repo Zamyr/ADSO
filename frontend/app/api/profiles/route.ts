@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Profile, CreateProfileDTO } from '@/lib/types/Profile';
 
 // Mock database - en producción esto vendría de una base de datos real
-let mockProfiles: Profile[] = [
+const mockProfiles: Profile[] = [
   {
     id: '1',
     username: 'john_doe',

@@ -60,7 +60,7 @@ npm run test:coverage
 
 ### Páginas Implementadas
 
-1. **Home (`/`)**: Página de bienvenida
+1. **Home (`/`)**: Página de bienvenida con tema oscuro
 2. **Lista de Perfiles (`/profiles`)**: Grid responsive de perfiles
 3. **Detalle de Perfil (`/profiles/[id]`)**: Vista completa
 4. **Crear Perfil (`/profiles/create`)**: Formulario de creación
@@ -69,11 +69,15 @@ npm run test:coverage
 ### Funcionalidades
 
 - ✅ CRUD completo de perfiles
-- ✅ Validación de formularios
-- ✅ Estados de carga y error
-- ✅ Diseño responsive
+- ✅ Validación de formularios (manual)
+- ✅ Estados de carga con skeleton screens
+- ✅ Manejo de errores con retry
+- ✅ Diseño responsive (mobile, tablet, desktop)
+- ✅ Tema oscuro consistente
+- ✅ Cards con altura uniforme
 - ✅ Mock APIs integradas
-- ✅ Tests unitarios
+- ✅ Tests unitarios (11 tests)
+- ✅ Transiciones suaves entre páginas
 
 ## 🧪 Testing
 
@@ -81,11 +85,17 @@ npm run test:coverage
 # Ejecutar tests
 npm test
 
+# Modo watch
+npm run test:watch
+
 # Cobertura
 npm run test:coverage
 ```
 
-**Cobertura actual:** 10+ tests pasando
+**Tests implementados:**
+- ProfileCard: 4 tests (rendering, formateo de fechas, bio opcional, enlaces)
+- ProfileForm: 7 tests (validaciones, submit, errores, estados)
+- **Total:** 11 tests, 10+ pasando
 
 ## 🏗️ Arquitectura
 

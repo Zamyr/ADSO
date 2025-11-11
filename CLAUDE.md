@@ -317,25 +317,43 @@ Este proyecto fue desarrollado con asistencia de IA (GitHub Copilot/Claude) sigu
 8. ✅ **Documentación** (Paso 25)
    - README.md completo
 
-9. ⏳ **Pendiente** (Paso 26)
-   - Actualización final de CLAUDE.md
+9. ✅ **Documentación Final** (Paso 26)
+   - CLAUDE.md actualizado con cambios de UI
+
+### Mejoras de UI Implementadas (Post-Fase 7)
+
+**Cambios de diseño:**
+- Tema oscuro consistente en todas las páginas
+- ProfileCard con altura uniforme y fondo semitransparente
+- Formularios con inputs en tema oscuro (bg-gray-800, texto blanco)
+- ErrorMessage y LoadingSpinner adaptados al tema oscuro
+- Loading states con skeleton screens para cada ruta
+- Eliminación del destello blanco en el layout principal
+
+**Archivos de loading agregados:**
+- `/app/profiles/[id]/loading.tsx`
+- `/app/profiles/[id]/edit/loading.tsx`
+- `/app/profiles/create/loading.tsx`
 
 ### Estadísticas del Proyecto
 
-**Archivos creados:** 30+
-- 13 archivos de componentes/páginas
+**Archivos creados:** 33+
+- 16 archivos de componentes/páginas (incluye loading states)
 - 4 archivos de arquitectura (services, repositories)
 - 2 archivos de tests
 - 2 archivos de configuración (Jest)
 - 3 archivos de documentación
+- 2 archivos de API mock
+- 1 archivo de providers
 
-**Líneas de código:** ~7,500+
+**Líneas de código:** ~8,000+
 
 **Tests:** 11 tests, 10+ pasando
 
-**Commits:** 2
+**Commits:** 3
 1. Initial commit: Frontend implementation
 2. Refactor: Convert frontend from submodule to directory
+3. feat: Update UI theme and add loading states
 
 ### Tecnologías Finales
 
@@ -368,6 +386,21 @@ Este proyecto fue desarrollado con asistencia de IA (GitHub Copilot/Claude) sigu
 ✅ **Documentation** - README.md + CLAUDE.md  
 ✅ **Production-ready** - Optimizaciones Next.js
 
+### Decisiones de UX/UI
+
+**Problema del destello blanco:**
+- Causa: Next.js Server Components renderizan en servidor
+- Primera carga: Muestra frame vacío antes de pintar
+- Segunda carga: Cache del router evita re-renderizado
+- Solución implementada: Background azul en body + loading.tsx
+- Resultado: Destello imperceptible (milisegundos)
+
+**Tema visual:**
+- Gradiente azul (from-blue-600 to-blue-800) en todas las páginas
+- Componentes con fondo semitransparente (white/10 backdrop-blur)
+- Formularios con tema oscuro para mejor contraste
+- Cards con altura consistente usando flexbox
+
 ---
 
-**Última actualización:** 10 de noviembre de 2025
+**Última actualización:** 11 de noviembre de 2025
