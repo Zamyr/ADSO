@@ -10,37 +10,178 @@ Este archivo documenta dudas específicas, errores encontrados y consultas reali
 
 ---
 
-## 🔄 Refactorización Final: Eliminar Singleton Pattern
+## � Escalamiento Horizontal con Docker (Implementación Final)
 
 **Fecha:** 11 de noviembre de 2025 (post-revisión de requisitos)
 
-**Problema identificado:** El challenge pedía "Scale horizontally" pero implementamos Singleton Pattern, que aunque no impide scaling, no era la mejor opción arquitectónica.
+**Contexto:** Después de completar el backend funcional, revisé los requisitos del challenge y descubrí que pedía "Scale horizontally". No tenía mucho conocimiento ni experiencia práctica aplicando escalamiento horizontal, así que **Copilot me guió en todo el proceso**.
 
-**Decisión de refactorización:**
-- Eliminar clase `Database` con Singleton Pattern
-- Exportar `pool` directamente desde `database.js`
-- Eliminar `getInstance()` de `ProfileRepository`
-- Cada instancia del servidor tiene su propio pool (correcto para scaling horizontal)
+### Fase 1: Refactorización del Singleton Pattern
+
+**Problema identificado:** Implementé Singleton Pattern inicialmente, pero Copilot me explicó que no era apropiado para escalamiento horizontal porque podía generar confusión arquitectónica.
+
+**Colaboración con Copilot:** Me ayudó a entender que cada instancia del servidor debe tener su propio pool de conexiones, no compartir un Singleton global. Me guió en la refactorización completa:
 
 **Cambios realizados:**
 ```javascript
-// Antes (Singleton)
+// Antes (Singleton - confuso para scaling)
 const db = Database.getInstance();
 const pool = db.getPool();
 
-// Después (Pool directo)
+// Después (Pool directo - apropiado para scaling)
 import pool from './config/database.js';
 ```
 
-**Beneficios:**
-- Código más simple y directo
-- Mejor naming (pool en lugar de Singleton confuso)
-- Cada instancia del servidor maneja su propio pool independientemente
-- Apropiado para load balancers y auto-scaling
+**Archivos refactorizados (9 archivos):**
+- `database.js` - Eliminada clase, exportado pool directamente
+- `ProfileRepository.js` - Removido getInstance(), import directo de pool
+- `ProfileController.js` - Constructor usa `new ProfileRepository()`
+- `server.js`, `test-db.js` - Imports actualizados
+- `profileRoutes.js` - POST corregido a `/profiles` (plural)
+- Todos los tests actualizados y pasando (23/23) ✅
 
-**Tests:** 23/23 siguen pasando ✅
+### Fase 2: Dockerización con NGINX Load Balancer
 
-**Archivos modificados:** database.js, ProfileRepository.js, ProfileController.js, server.js, test-db.js, todos los tests
+**Desafío:** Nunca había implementado un load balancer ni múltiples instancias de un backend. No sabía cómo hacer que varias copias del servidor corrieran simultáneamente.
+
+**Colaboración con Copilot:** Me enseñó paso a paso cómo estructurar Docker para escalamiento horizontal:
+
+**1. Dockerfile para Backend:**
+```dockerfile
+FROM node:21-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 4000
+CMD ["node", "src/server.js"]
+```
+
+**Aprendizaje:** Copilot me explicó por qué usar `npm ci --only=production` en lugar de `npm install`, y cómo copiar solo lo necesario con `.dockerignore`.
+
+**2. NGINX como Load Balancer:**
+```nginx
+upstream backend {
+    least_conn;  # Algoritmo de balanceo
+    server backend:4000;
+}
+
+server {
+    listen 80;
+    location /api {
+        proxy_pass http://backend;
+        # Headers para mantener contexto
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+**Aprendizaje:** No conocía el algoritmo `least_conn`. Copilot me explicó que distribuye peticiones a la instancia con menos conexiones activas, más eficiente que round-robin para este caso.
+
+**3. Docker Compose con Scaling:**
+```yaml
+services:
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: mysql  # Nombre del servicio, no localhost
+    networks:
+      - adso_network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+```
+
+**Comando mágico que aprendí:**
+```bash
+docker compose up --scale backend=3 -d
+```
+
+**Aprendizaje clave:** Copilot me mostró que Docker Compose automáticamente crea múltiples contenedores (backend-1, backend-2, backend-3) y NGINX los balancea sin configuración adicional. ¡Increíble!
+
+### Fase 3: Integración Frontend-Backend en Docker
+
+**Problema:** El frontend no se conectaba al backend porque usaba rutas mock (`/app/api/profiles/route.ts`).
+
+**Colaboración con Copilot:** Me ayudó a:
+1. Eliminar las rutas mock de Next.js
+2. Configurar variables de entorno correctamente (`NEXT_PUBLIC_API_URL`)
+3. Crear `Dockerfile.dev` para modo desarrollo
+4. Entender las diferencias entre desarrollo local vs Docker
+
+**Decisión final guiada por Copilot:**
+- **Opción 1 (Recomendada):** Frontend local con `npm run dev` + Backend en Docker
+- **Opción 2:** Todo en Docker (conveniente pero consume muchos recursos)
+
+Me explicó por qué Next.js en modo desarrollo dentro de Docker es significativamente más lento y consume más CPU/RAM.
+
+### Fase 4: Documentación de Escalamiento (SCALING.md)
+
+**Colaboración con Copilot:** Creó un documento completo de 300+ líneas explicando:
+- Cómo escalar de 10 req/seg (1 instancia) a 1,000+ req/seg (100 instancias)
+- Arquitectura Master-Replica para MySQL
+- Implementación de Redis para caché
+- Estimación de costos AWS ($4,800/mes)
+- Plan de migración de 4 semanas
+
+**Aprendizaje:** Copilot me enseñó conceptos avanzados que no conocía:
+- Connection pooling a escala (1,000 conexiones totales)
+- Estrategias de caché (70% de hit rate reduce carga de DB)
+- Monitoreo con Prometheus + Grafana
+- Rate limiting y protección DDoS
+
+### Resultados Finales
+
+**Arquitectura implementada:**
+```
+Usuario → NGINX:8080 → Backend-1:4000 ┐
+                     → Backend-2:4000 ├─→ MySQL:3306
+                     → Backend-3:4000 ┘
+```
+
+**Comandos funcionales:**
+```bash
+# Escalar a 3 instancias
+docker compose up --scale backend=3 -d
+
+# Escalar a 10 instancias
+docker compose up --scale backend=10 -d
+
+# Ver todas las instancias corriendo
+docker ps | grep backend
+```
+
+**Pruebas realizadas:**
+- ✅ 3 instancias corriendo simultáneamente
+- ✅ NGINX distribuyendo carga correctamente
+- ✅ 6 requests concurrentes procesados exitosamente
+- ✅ Frontend conectado al backend real (21 perfiles de MySQL)
+- ✅ Todos los tests pasando después de refactorización (23/23)
+
+### Lo que aprendí con Copilot
+
+**Conceptos que no dominaba:**
+- ✅ Escalamiento horizontal vs vertical
+- ✅ Load balancing con NGINX
+- ✅ Docker Compose networking
+- ✅ Variables de entorno en builds de Docker
+- ✅ Connection pooling en arquitecturas distribuidas
+- ✅ Diferencia entre `localhost` y nombres de servicios en Docker
+
+**Habilidades prácticas adquiridas:**
+- ✅ Configurar NGINX como reverse proxy
+- ✅ Usar `docker compose --scale` para múltiples instancias
+- ✅ Estructurar Dockerfiles optimizados (multi-stage, .dockerignore)
+- ✅ Debugging de contenedores con `docker logs`
+- ✅ Network troubleshooting en Docker Compose
+
+**Tiempo invertido:** ~3 horas (incluyendo aprendizaje y debugging)
+
+**Resultado:** Pasé de no saber nada de escalamiento horizontal a tener una arquitectura completa y funcional con documentación profesional.
 
 ---
 
@@ -415,7 +556,7 @@ router.post('/profiles',
 
 **Arquitectura:**
 - Repository Pattern para acceso a datos
-- Singleton Pattern para Database connection pool
+- ~~Singleton Pattern~~ → **Pool directo** (refactorizado para scaling horizontal)
 - MVC con separación clara (Routes → Controller → Repository)
 - Middleware de validación con express-validator
 - Manejo centralizado de errores
@@ -426,13 +567,25 @@ router.post('/profiles',
 - Integration tests con supertest (sin server.listen())
 - Unit tests con custom mocks para ES modules
 
+**Escalamiento Horizontal (con ayuda de Copilot):**
+- Docker Compose con soporte para `--scale backend=N`
+- NGINX como load balancer (algoritmo least_conn)
+- Múltiples instancias del backend corriendo simultáneamente
+- Documentación completa de estrategia de escalamiento (SCALING.md)
+
 **Integración:**
-- CORS configurado para localhost:3000
-- API REST en localhost:4000
-- Docker Compose para MySQL 8.0
-- Comando unificado `npm start` para desarrollo completo
+- Frontend: `http://localhost:3000` (local o Docker)
+- Backend API: `http://localhost:8080/api` (NGINX)
+- Backend: 3+ instancias escalables
+- MySQL: `http://localhost:3306` (Docker)
+
+**Archivos Docker creados:**
+- `backend/Dockerfile` - Imagen de producción
+- `frontend/Dockerfile.dev` - Imagen de desarrollo
+- `nginx.conf` - Configuración del load balancer
+- `docker-compose.yml` - Orquestación completa
 
 ---
 
 **Última actualización:** 11 de noviembre de 2025  
-**Estado actual:** Setup completado, comenzando fase de base de datos
+**Estado actual:** ✅ Proyecto completado al 100% con escalamiento horizontal funcional
