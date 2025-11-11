@@ -19,6 +19,9 @@ This will:
 1. Install all dependencies (frontend + backend)
 2. Start MySQL in Docker
 3. Run frontend (http://localhost:3000) and backend (http://localhost:4000)
+4. Frontend connects automatically to backend API
+
+**Note:** The first run may take 2-3 minutes to install all dependencies.
 
 ### Manual Setup
 

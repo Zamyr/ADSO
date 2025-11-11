@@ -20,19 +20,21 @@ export class ProfileRepository {
     if (!response.ok) {
       throw new Error('Error al obtener perfiles');
     }
-    return response.json();
+    const data = await response.json();
+    return data.profiles || data;
   }
 
   async getById(id: string): Promise<Profile> {
-    const response = await fetch(`${this.baseUrl}/profiles/${id}`);
+    const response = await fetch(`${this.baseUrl}/profile/${id}`);
     if (!response.ok) {
       throw new Error('Error al obtener el perfil');
     }
-    return response.json();
+    const data = await response.json();
+    return data.profile || data;
   }
 
   async create(data: CreateProfileDTO): Promise<{ id: string }> {
-    const response = await fetch(`${this.baseUrl}/profiles`, {
+    const response = await fetch(`${this.baseUrl}/profile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,11 +44,12 @@ export class ProfileRepository {
     if (!response.ok) {
       throw new Error('Error al crear el perfil');
     }
-    return response.json();
+    const result = await response.json();
+    return { id: result.profile.id };
   }
 
   async update(id: string, data: UpdateProfileDTO): Promise<Profile> {
-    const response = await fetch(`${this.baseUrl}/profiles/${id}`, {
+    const response = await fetch(`${this.baseUrl}/profile/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -56,6 +59,7 @@ export class ProfileRepository {
     if (!response.ok) {
       throw new Error('Error al actualizar el perfil');
     }
-    return response.json();
+    const result = await response.json();
+    return result.profile || result;
   }
 }

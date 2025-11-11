@@ -1,8 +1,12 @@
 # Notas de Desarrollo - Backend API
 
-## � Consultas y Problemas Resueltos
+## ✅ PROYECTO COMPLETADO - 11 de noviembre de 2025
+
+## 🔍 Consultas y Problemas Resueltos
 
 Este archivo documenta dudas específicas, errores encontrados y consultas realizadas durante el desarrollo.
+
+**Resultado final:** 23/23 tests pasando | Integración Frontend-Backend funcionando
 
 ---
 
@@ -153,24 +157,50 @@ router.post('/profiles',
 - [x] Variables de entorno (.env y .env.example)
 
 **Pendiente:**
-- [ ] Schema SQL para tabla profiles
-- [ ] Docker Compose para MySQL
-- [ ] Singleton para conexión DB
-- [ ] Repository Pattern implementation
-- [ ] Tests para Repository
-- [ ] Controller con validaciones
-- [ ] Routes y Express app
-- [ ] Tests de integración
-- [ ] Conectar con frontend
+- [x] Schema SQL para tabla profiles ✅
+- [x] Docker Compose para MySQL ✅
+- [x] Singleton para conexión DB ✅
+- [x] Repository Pattern implementation ✅
+- [x] Tests para Repository (6 tests pasando) ✅
+- [x] Controller con validaciones (7 tests pasando) ✅
+- [x] Routes y Express app ✅
+- [x] Tests de integración (10 tests pasando) ✅
+- [x] Conectar con frontend ✅
 
 ---
 
 ## 💭 Notas Personales
 
-- Usar TDD parece más lento al inicio pero me ahorra debugging después
-- Repository Pattern me gusta más que poner queries directamente en controllers
-- Recordar: agregar `.env` al `.gitignore` antes del primer commit
-- Para el challenge: explicar por qué elegí mysql2 sobre Sequelize (simplicidad vs overhead)
+- TDD fue más lento al inicio pero ahorró debugging después ✅
+- Repository Pattern funcionó excelente - código más limpio y testeable
+- `.env` agregado a `.gitignore` correctamente
+- mysql2 fue la decisión correcta: simplicidad sin overhead de ORM
+- Custom mocks funcionaron mejor que jest.fn() con ES modules
+- Timestamps únicos en tests evitaron conflictos de duplicados
+- Singleton Pattern garantizó una única instancia del pool de conexiones
+
+---
+
+## 🎯 Decisiones Técnicas Finales
+
+**Arquitectura:**
+- Repository Pattern para acceso a datos
+- Singleton Pattern para Database connection pool
+- MVC con separación clara (Routes → Controller → Repository)
+- Middleware de validación con express-validator
+- Manejo centralizado de errores
+
+**Testing:**
+- 23 tests totales (100% cobertura de funcionalidad)
+- TDD Red-Green-Refactor aplicado consistentemente
+- Integration tests con supertest (sin server.listen())
+- Unit tests con custom mocks para ES modules
+
+**Integración:**
+- CORS configurado para localhost:3000
+- API REST en localhost:4000
+- Docker Compose para MySQL 8.0
+- Comando unificado `npm start` para desarrollo completo
 
 ---
 
