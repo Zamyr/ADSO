@@ -73,9 +73,9 @@ export function ProfileForm({
       <div>
         <label
           htmlFor="username"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white mb-2"
         >
-          Nombre de usuario <span className="text-red-500">*</span>
+          Nombre de usuario <span className="text-red-300">*</span>
         </label>
         <input
           type="text"
@@ -84,22 +84,22 @@ export function ProfileForm({
           value={formData.username}
           onChange={handleChange}
           disabled={isLoading}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.username ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent disabled:bg-gray-700 disabled:cursor-not-allowed bg-gray-800 text-white placeholder-gray-400 ${
+            errors.username ? 'border-red-400' : 'border-gray-600'
           }`}
           placeholder="john_doe"
         />
         {errors.username && (
-          <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+          <p className="mt-1 text-sm text-red-300">{errors.username}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white mb-2"
         >
-          Email <span className="text-red-500">*</span>
+          Email <span className="text-red-300">*</span>
         </label>
         <input
           type="email"
@@ -108,20 +108,20 @@ export function ProfileForm({
           value={formData.email}
           onChange={handleChange}
           disabled={isLoading}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
-            errors.email ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent disabled:bg-gray-700 disabled:cursor-not-allowed bg-gray-800 text-white placeholder-gray-400 ${
+            errors.email ? 'border-red-400' : 'border-gray-600'
           }`}
           placeholder="john@example.com"
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-1 text-sm text-red-300">{errors.email}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="bio"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-white mb-2"
         >
           Biografía
         </label>
@@ -132,7 +132,7 @@ export function ProfileForm({
           onChange={handleChange}
           disabled={isLoading}
           rows={4}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+          className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent disabled:bg-gray-700 disabled:cursor-not-allowed resize-none bg-gray-800 text-white placeholder-gray-400"
           placeholder="Cuéntanos sobre ti..."
         />
       </div>

@@ -5,10 +5,10 @@ interface ErrorMessageProps {
 
 export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-center">
       <div className="flex flex-col items-center gap-3">
         <svg
-          className="h-12 w-12 text-red-500"
+          className="h-12 w-12 text-red-300"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -21,15 +21,15 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
           />
         </svg>
         <div>
-          <h3 className="text-lg font-semibold text-red-800 mb-1">
+          <h3 className="text-lg font-semibold text-white mb-1">
             Error al cargar los datos
           </h3>
-          <p className="text-red-600">{message}</p>
+          <p className="text-blue-100">{message}</p>
         </div>
         {onRetry && (
           <button
             onClick={onRetry}
-            className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+            className="mt-2 px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200"
           >
             Reintentar
           </button>

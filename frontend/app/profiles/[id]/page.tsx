@@ -54,12 +54,12 @@ export default function ProfileDetailPage({
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-600 to-blue-800">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link
             href="/profiles"
-            className="text-blue-600 hover:text-blue-700 flex items-center gap-2 mb-4"
+            className="text-white hover:text-blue-100 flex items-center gap-2 mb-4"
           >
             <svg
               className="h-5 w-5"
@@ -78,8 +78,8 @@ export default function ProfileDetailPage({
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-linear-to-r from-blue-600 to-blue-700 px-8 py-12">
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-sm border border-white/20 overflow-hidden">
+          <div className="bg-white/5 px-8 py-12">
             <div className="flex items-center gap-4">
               <div className="h-20 w-20 rounded-full bg-white flex items-center justify-center text-3xl font-bold text-blue-600">
                 {profile.username.charAt(0).toUpperCase()}
@@ -94,46 +94,46 @@ export default function ProfileDetailPage({
           <div className="px-8 py-6">
             <div className="space-y-6">
               <div>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <h2 className="text-sm font-semibold text-blue-100 uppercase tracking-wider mb-2">
                   Biografía
                 </h2>
                 {profile.bio ? (
-                  <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
+                  <p className="text-white leading-relaxed">{profile.bio}</p>
                 ) : (
-                  <p className="text-gray-400 italic">
+                  <p className="text-blue-200 italic">
                     Este usuario no ha agregado una biografía
                   </p>
                 )}
               </div>
 
-              <div className="border-t border-gray-200 pt-6">
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              <div className="border-t border-white/20 pt-6">
+                <h2 className="text-sm font-semibold text-blue-100 uppercase tracking-wider mb-3">
                   Información
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">ID de Usuario</p>
-                    <p className="font-mono text-gray-900">{profile.id}</p>
+                    <p className="text-sm text-blue-200">ID de Usuario</p>
+                    <p className="font-mono text-white">{profile.id}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Fecha de Creación</p>
-                    <p className="text-gray-900">{formattedDate}</p>
+                    <p className="text-sm text-blue-200">Fecha de Creación</p>
+                    <p className="text-white">{formattedDate}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 px-8 py-4 flex gap-3">
+          <div className="bg-white/5 backdrop-blur-sm px-8 py-4 flex gap-3">
             <Link
               href={`/profiles/${profile.id}/edit`}
-              className="flex-1 text-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+              className="flex-1 text-center px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium shadow-lg"
             >
               Editar Perfil
             </Link>
             <Link
               href="/profiles"
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium"
+              className="px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-colors duration-200 font-medium"
             >
               Cancelar
             </Link>

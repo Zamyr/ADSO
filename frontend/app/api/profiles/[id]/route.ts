@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Profile, UpdateProfileDTO } from '@/lib/types/Profile';
 
+// Mock database - en producción esto vendría de una base de datos real
 const mockProfiles: Profile[] = [
   {
     id: '1',
@@ -28,6 +29,13 @@ const mockProfiles: Profile[] = [
     username: 'sarah_wilson',
     email: 'sarah@example.com',
     created_at: '2025-04-05T16:20:00Z',
+  },
+  {
+    id: '5',
+    username: 'gilberto',
+    email: 'admin@shogun.com',
+    bio: 'gdfgdgdgdgddfgdgg',
+    created_at: '2025-11-11T08:00:00Z',
   },
 ];
 

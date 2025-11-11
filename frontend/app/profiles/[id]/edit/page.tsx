@@ -70,12 +70,12 @@ export default function EditProfilePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-600 to-blue-800">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link
-            href={`/profiles/${id}`}
-            className="text-blue-600 hover:text-blue-700 flex items-center gap-2 mb-4"
+            href={`/profiles/${profile.id}`}
+            className="text-white hover:text-blue-100 flex items-center gap-2 mb-4"
           >
             <svg
               className="h-5 w-5"
@@ -92,17 +92,17 @@ export default function EditProfilePage({
             </svg>
             Volver al perfil
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Editar Perfil</h1>
-          <p className="mt-2 text-gray-600">
-            Actualiza la información de {profile.username}
+          <h1 className="text-3xl font-bold text-white">Editar Perfil</h1>
+          <p className="mt-2 text-blue-100">
+            Actualiza la información del perfil de {profile.username}
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-sm border border-white/20 p-8">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 font-medium">Error al actualizar el perfil</p>
-              <p className="text-red-600 text-sm mt-1">{error}</p>
+            <div className="mb-6 bg-red-500/20 border border-red-400/30 rounded-lg p-4">
+              <p className="text-white font-medium">Error al actualizar el perfil</p>
+              <p className="text-red-100 text-sm mt-1">{error}</p>
             </div>
           )}
 
@@ -113,10 +113,10 @@ export default function EditProfilePage({
             submitLabel="Guardar Cambios"
           />
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-white/20">
             <Link
               href={`/profiles/${id}`}
-              className="text-gray-600 hover:text-gray-800 text-sm"
+              className="text-blue-100 hover:text-white text-sm"
             >
               Cancelar y volver
             </Link>
