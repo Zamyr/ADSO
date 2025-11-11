@@ -85,7 +85,203 @@ class Database {
 3. Usar transacciones con rollback para tests unitarios
 4. Supertest para tests de integración sin levantar servidor
 
-**Estado:** Por aplicar en fase de testing
+**Estado:** ✅ Aplicado exitosamente
+
+---
+
+## 🎯 Implementación de TDD (Test-Driven Development)
+
+### Metodología Aplicada: Red-Green-Refactor
+
+**Contexto inicial:** Decidí implementar TDD completo para garantizar calidad del código desde el inicio
+
+**Colaboración con Copilot:** Me asistió en la implementación práctica de TDD con base de datos real, ayudándome a estructurar los tests y resolver los desafíos específicos del ciclo Red-Green-Refactor con MySQL.
+
+**Ciclo aplicado:**
+1. 🔴 **Red**: Escribir test que falla (funcionalidad no existe)
+2. 🟢 **Green**: Implementar código mínimo para pasar el test
+3. 🔵 **Refactor**: Mejorar código sin romper tests
+
+### Fase 3: Repository Pattern con TDD (Steps 11-19)
+
+**Paso 11-12: Primer ciclo TDD - getAll()**
+
+1. **🔴 Red** - Con ayuda de Copilot, escribí el test primero:
+```javascript
+describe('ProfileRepository', () => {
+  test('getAll debe retornar todos los perfiles', async () => {
+    const profiles = await ProfileRepository.getInstance().getAll();
+    expect(Array.isArray(profiles)).toBe(true);
+    expect(profiles.length).toBeGreaterThan(0);
+  });
+});
+```
+Resultado: ❌ Test falló (método no existe)
+
+2. **🟢 Green** - Implementé el código mínimo:
+```javascript
+class ProfileRepository {
+  async getAll() {
+    const [rows] = await db.query('SELECT * FROM profiles');
+    return rows;
+  }
+}
+```
+Resultado: ✅ Test pasó
+
+3. **🔵 Refactor** - Agregué ordenamiento:
+```javascript
+async getAll() {
+  const [rows] = await db.query(
+    'SELECT * FROM profiles ORDER BY created_at DESC'
+  );
+  return rows;
+}
+```
+
+**Paso 13-14: Segundo ciclo TDD - getById()**
+
+1. **🔴 Red** - Test primero:
+```javascript
+test('getById debe retornar un perfil', async () => {
+  const profile = await repo.getById(1);
+  expect(profile).toBeDefined();
+  expect(profile.id).toBe(1);
+});
+
+test('getById debe retornar null si no existe', async () => {
+  const profile = await repo.getById(99999);
+  expect(profile).toBeNull();
+});
+```
+
+2. **🟢 Green** - Implementación:
+```javascript
+async getById(id) {
+  const [rows] = await db.query(
+    'SELECT * FROM profiles WHERE id = ?',
+    [id]
+  );
+  return rows.length > 0 ? rows[0] : null;
+}
+```
+
+**Paso 15-16: Tercer ciclo TDD - create()**
+
+Desafío: Evitar duplicados en tests sucesivos
+
+**Solución con Copilot:** Sugerencia de usar timestamps para generar datos únicos en cada ejecución:
+```javascript
+test('create debe insertar nuevo perfil', async () => {
+  const timestamp = Date.now();
+  const newProfile = {
+    username: `user_${timestamp}`,  // ← Timestamps únicos
+    email: `email_${timestamp}@test.com`,
+    bio: 'Test bio'
+  };
+  
+  const result = await repo.create(newProfile);
+  expect(result.id).toBeDefined();
+});
+```
+
+**Paso 17-18: Cuarto ciclo TDD - update()**
+
+**Paso 19: Refactor final - Manejo de errores**
+
+Agregué try/catch y detección de duplicados:
+```javascript
+async create(profileData) {
+  try {
+    const [result] = await db.query('INSERT INTO profiles SET ?', profileData);
+    return { id: result.insertId };
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      throw new Error('Username or email already exists');
+    }
+    throw error;
+  }
+}
+```
+
+### Fase 4: Controllers con TDD (Steps 20-28)
+
+**Desafío:** Mockear el Repository en tests de Controller
+
+**Solución implementada con Copilot:** Custom Mocks en lugar de jest.fn() (mejor compatibilidad con ES modules):
+```javascript
+// Custom mock para ES modules
+const mockProfileRepository = {
+  getAll: async () => [{ id: 1, username: 'test' }],
+  getById: async (id) => ({ id, username: 'test' }),
+  create: async (data) => ({ id: 1 }),
+  update: async (id, data) => ({ id })
+};
+```
+
+**Implementación de Controller con TDD:**
+
+1. **🔴 Red** - Test de getAllProfiles:
+```javascript
+test('debe retornar 200 con lista de perfiles', async () => {
+  await ProfileController.getAllProfiles(mockReq, mockRes);
+  expect(mockRes.statusCode).toBe(200);
+  expect(mockRes.responseData.profiles).toBeDefined();
+});
+```
+
+2. **🟢 Green** - Implementación:
+```javascript
+async getAllProfiles(req, res) {
+  const profiles = await ProfileRepository.getInstance().getAll();
+  res.status(200).json({ profiles });
+}
+```
+
+### Fase 5: Integration Tests con Supertest (Steps 29-39)
+
+**Objetivo:** Probar el API completo sin levantar el servidor en cada test
+
+**Implementación con Copilot:** Separación de `app.js` (configuración) y `server.js` (inicio) para usar Supertest sin server.listen():
+
+```javascript
+// app.js - Solo exportar
+export default app;
+
+// server.js - Usar app.listen()
+app.listen(4000);
+
+// tests - Importar app directamente
+import request from 'supertest';
+import app from '../../src/app.js';
+
+test('GET /api/profiles debe retornar 200', async () => {
+  const response = await request(app)  // ← Sin .listen()
+    .get('/api/profiles')
+    .expect(200);
+});
+```
+
+### Resultados Finales del TDD
+
+**23 tests implementados:**
+- 6 tests unitarios - ProfileRepository
+- 7 tests unitarios - ProfileController
+- 10 tests integración - API Routes completa
+
+**Tiempo invertido:** ~4 horas (con aprendizaje)
+
+**Beneficios observados:**
+- ✅ Código más confiable (23/23 tests pasando)
+- ✅ Refactoring sin miedo (tests como red de seguridad)
+- ✅ Detección temprana de bugs (duplicate entries, null handling)
+- ✅ Documentación viva (tests muestran cómo usar el código)
+
+**Desafíos superados con ayuda de Copilot:**
+- Configuración de ES Modules con Jest (`--experimental-vm-modules`)
+- Implementación de custom mocks en lugar de jest.fn()
+- Estrategia de timestamps únicos para tests con base de datos real
+- Arquitectura de Supertest sin server.listen()
 
 ---
 

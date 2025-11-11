@@ -144,6 +144,97 @@ Cannot use import statement outside a module
 
 ---
 
+## 🧪 Metodología de Testing: Pruebas Unitarias en Frontend
+
+### Proceso de Implementación de Tests
+
+**Contexto inicial:** El proyecto tenía configuración de Jest pero necesitaba implementar la suite completa de tests
+
+**Colaboración con Copilot:** Me ayudó a estructurar los tests para componentes que usan TanStack Query, específicamente con la estrategia de mocks y la organización de los test suites.
+
+**Paso 1: Configuración de Mocks**
+
+Con la ayuda de Copilot, implementamos mocks personalizados para TanStack Query:
+
+```typescript
+// __mocks__/tanstack-react-query.tsx
+jest.mock('@tanstack/react-query', () => ({
+  useQuery: jest.fn(),
+  useMutation: jest.fn(),
+  QueryClient: jest.fn(),
+  QueryClientProvider: ({ children }: any) => children
+}));
+```
+
+**Paso 2: Tests del Repository Pattern**
+
+Con Copilot, diseñamos tests para validar el patrón Singleton y los métodos de `ProfileRepository.ts`:
+
+```typescript
+describe('ProfileRepository', () => {
+  test('debe ser un Singleton', () => {
+    const instance1 = ProfileRepository.getInstance();
+    const instance2 = ProfileRepository.getInstance();
+    expect(instance1).toBe(instance2);
+  });
+
+  test('getAll debe retornar lista de perfiles', async () => {
+    const profiles = await ProfileRepository.getInstance().getAll();
+    expect(Array.isArray(profiles)).toBe(true);
+  });
+});
+```
+
+**Paso 3: Tests de Componentes con React Testing Library**
+
+Copilot me asistió en crear tests de renderizado para componentes como `ProfileCard.tsx`:
+
+```typescript
+describe('ProfileCard', () => {
+  test('debe renderizar información del perfil', () => {
+    const mockProfile = {
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+      bio: 'Test bio'
+    };
+    
+    render(<ProfileCard profile={mockProfile} />);
+    
+    expect(screen.getByText('testuser')).toBeInTheDocument();
+    expect(screen.getByText('test@example.com')).toBeInTheDocument();
+  });
+});
+```
+
+**Paso 4: Tests de Custom Hooks**
+
+Implementamos juntos tests para custom hooks como `useProfileViewModel`:
+
+```typescript
+describe('useProfileViewModel', () => {
+  test('debe manejar estado de loading', () => {
+    (useQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null
+    });
+    
+    const { result } = renderHook(() => useProfileViewModel());
+    expect(result.current.isLoading).toBe(true);
+  });
+});
+```
+
+**Resultado final:**
+- ✅ 11 tests implementados con ayuda de Copilot
+- ✅ Cobertura completa: Repository, ViewModels y Componentes
+- ✅ Todos los tests pasando con `npm test`
+
+**Aprendizaje clave:** Copilot sugirió usar mocks personalizados en lugar de las funciones reales de TanStack Query, lo cual simplificó significativamente la configuración del entorno de testing.
+
+---
+
 ## Recursos Consultados
 
 1. **Next.js 14 Docs** - https://nextjs.org/docs
