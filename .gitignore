@@ -6,7 +6,10 @@ build/
 *.log
 .env
 .env.local
+.env.production
 .DS_Store
 coverage/
 .vscode/
 .idea/
+package-lock.json
+package.json

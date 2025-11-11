@@ -29,11 +29,37 @@ npm install
 
 ## 🏃 Ejecución
 
-### Modo Desarrollo
+### Opción 1: Desarrollo Local (⚡ Recomendado)
 ```bash
+# Asegúrate de que el backend esté corriendo en Docker
+cd ../
+docker compose up --scale backend=3 -d
+
+# Luego inicia el frontend en desarrollo
+cd frontend
+npm install  # Solo la primera vez
 npm run dev
 ```
 La aplicación estará disponible en: `http://localhost:3000`
+
+**Ventajas:**
+- ⚡ Hot reload instantáneo
+- 🚀 Compilación mucho más rápida
+- 💻 Menor consumo de recursos
+
+**Nota:** El frontend se conecta al backend en `http://localhost:8080/api` (configurado en `.env.local`)
+
+---
+
+### Opción 2: Todo en Docker
+```bash
+# Desde la raíz del proyecto
+docker compose up --scale backend=3 -d
+```
+
+⚠️ **Advertencia:** Next.js en modo desarrollo dentro de Docker consume **muchos recursos** (CPU y RAM) y es significativamente más lento. Esta opción es útil para testing rápido o demos, pero **NO recomendada para desarrollo activo**.
+
+---
 
 ### Modo Producción
 ```bash

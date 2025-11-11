@@ -1,12 +1,12 @@
 import request from 'supertest';
 import app from '../../src/app.js';
-import Database from '../../src/config/database.js';
+import pool from '../../src/config/database.js';
 
 describe('Profile API Integration Tests', () => {
   let testProfileId;
 
   afterAll(async () => {
-    await Database.getInstance().getPool().end();
+    await pool.end();
   });
 
   describe('GET /api/profiles', () => {
@@ -19,7 +19,7 @@ describe('Profile API Integration Tests', () => {
     });
   });
 
-  describe('POST /api/profile', () => {
+  describe('POST /api/profiles', () => {
     test('debe crear un nuevo perfil con status 201', async () => {
       const timestamp = Date.now();
       const newProfile = {
@@ -29,7 +29,7 @@ describe('Profile API Integration Tests', () => {
       };
 
       const response = await request(app)
-        .post('/api/profile')
+        .post('/api/profiles')
         .send(newProfile);
 
       expect(response.status).toBe(201);
@@ -41,7 +41,7 @@ describe('Profile API Integration Tests', () => {
 
     test('debe retornar 400 si falta el username', async () => {
       const response = await request(app)
-        .post('/api/profile')
+        .post('/api/profiles')
         .send({ email: 'test@test.com' });
 
       expect(response.status).toBe(400);
@@ -49,7 +49,7 @@ describe('Profile API Integration Tests', () => {
 
     test('debe retornar 400 si el email es inválido', async () => {
       const response = await request(app)
-        .post('/api/profile')
+        .post('/api/profiles')
         .send({ username: 'test', email: 'invalid-email' });
 
       expect(response.status).toBe(400);

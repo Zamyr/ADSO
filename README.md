@@ -1,39 +1,85 @@
 # AdSo - User Profile Management System
 
-Full-stack application for managing user profiles built with Next.js 14, Express.js, and MySQL.
+Full-stack application for managing user profiles built with Next.js 16, Express.js, and MySQL.
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Desarrollo)
 
-### Prerequisites
-- **Docker Desktop** (running)
-- **Node.js** 18+ (v20 or v22 recommended)
-- **npm** 10+
+### Prerequisitos
+- **Docker Desktop** (corriendo)
+- **Node.js** 18+ (recomendado: v20 o v22) - opcional
+- **npm** 10+ - opcional
 
-### One Command Setup
+---
+
+## Opción 1: Todo en Docker (Recomendado para Testing)
 
 ```bash
-npm start
+# Un solo comando inicia todo
+docker compose up --scale backend=3 -d
 ```
 
-This will:
-1. Install all dependencies (frontend + backend)
-2. Start MySQL in Docker
-3. Run frontend (http://localhost:3000) and backend (http://localhost:4000)
-4. Frontend connects automatically to backend API
+Esto inicia:
+- ✅ Frontend en puerto 3000 (Next.js dev mode)
+- ✅ MySQL en puerto 3306
+- ✅ 3 instancias del backend (escalamiento horizontal)
+- ✅ NGINX load balancer en puerto 8080
 
-**Note:** The first run may take 2-3 minutes to install all dependencies.
+**URLs:**
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8080/api`
 
-### Manual Setup
+⚠️ **Nota:** Next.js en modo desarrollo (`npm run dev`) dentro de Docker consume **muchos recursos** (CPU y RAM) y es más lento que correrlo localmente. Esta opción es útil para testing rápido o demos, pero no recomendada para desarrollo activo.
+
+---
+
+## Opción 2: Frontend Local + Backend en Docker (Recomendado para Desarrollo)
+
+### Paso 1: Iniciar Backend en Docker
 
 ```bash
-# Install dependencies
-npm run install:all
+# Comenta el servicio 'frontend' en docker-compose.yml
+# Luego ejecuta:
+docker compose up --scale backend=3 -d
+```
 
-# Start MySQL
-npm run docker:up
+### Paso 2: Iniciar Frontend Localmente
 
-# Run both servers
+```bash
+cd frontend
+npm install
 npm run dev
+```
+
+**Ventajas:**
+- ⚡ Hot reload instantáneo
+- 🚀 Mucho más rápido
+- 💻 Menor consumo de recursos
+- 🔧 Mejor experiencia de desarrollo
+
+---
+
+## 🐳 Comandos Docker
+
+```bash
+# Iniciar todo (frontend + backend)
+docker compose up --scale backend=3 -d
+
+# Iniciar solo backend (sin frontend)
+# Primero comenta el servicio 'frontend' en docker-compose.yml
+docker compose up --scale backend=3 -d
+
+# Iniciar backend (escalado a 5 instancias)
+docker compose up --scale backend=5 -d
+
+# Ver logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Detener todo
+docker compose down
+
+# Ver contenedores corriendo
+docker ps
 ```
 
 ## 📦 Project Structure

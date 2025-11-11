@@ -15,6 +15,56 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - adso_network
+
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: adso_profiles
+      PORT: 4000
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - adso_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+    depends_on:
+      - nginx
+    networks:
+      - adso_network
+    command: npm run dev
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - adso_network
 
 volumes:
   mysql_data:
+
+networks:
+  adso_network:
+    driver: bridge

@@ -1,12 +1,11 @@
 import app from './app.js';
-import Database from './config/database.js';
+import { testConnection } from './config/database.js';
 
 const PORT = process.env.PORT || 4000;
 
 const startServer = async () => {
   try {
-    const db = Database.getInstance();
-    const connected = await db.testConnection();
+    const connected = await testConnection();
 
     if (!connected) {
       console.error('Failed to connect to database');

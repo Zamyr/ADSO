@@ -41,7 +41,7 @@ FRONTEND_URL=http://localhost:3000
 
 ## Ejecución
 
-### Desarrollo
+### Desarrollo Local
 ```bash
 npm run dev
 ```
@@ -50,6 +50,39 @@ El servidor estará disponible en: `http://localhost:4000`
 ### Producción
 ```bash
 npm start
+```
+
+### Docker con Escalamiento Horizontal
+
+**Iniciar con 1 instancia:**
+```bash
+cd ..  # Ir a la raíz del proyecto
+docker compose up --build -d
+```
+API disponible en: `http://localhost:8080/api`
+
+**Escalar a 3 instancias:**
+```bash
+docker compose up --scale backend=3 -d
+```
+
+**Escalar a 5 instancias:**
+```bash
+docker compose up --scale backend=5 -d
+```
+
+**Verificar instancias corriendo:**
+```bash
+docker ps | grep backend
+```
+
+**Arquitectura con Docker:**
+```
+Cliente → NGINX:8080 → Backend-1:4000
+                     → Backend-2:4000
+                     → Backend-3:4000
+                     ↓
+                  MySQL:3306
 ```
 
 ### Tests
@@ -214,6 +247,31 @@ CREATE TABLE profiles (
 - `400 Bad Request` - Datos inválidos o duplicados
 - `404 Not Found` - Recurso no encontrado
 - `500 Internal Server Error` - Error del servidor
+
+---
+
+## Escalabilidad y Arquitectura
+
+### Diseño para Escalamiento Horizontal
+
+**Arquitectura Actual:**
+- API stateless (sin sesiones en memoria)
+- Connection pooling (10 conexiones por instancia)
+- Listo para desplegar múltiples instancias
+
+**Capacidad:**
+- Instancia única: 10-20 req/sec
+- 100 instancias: 1,000+ req/sec
+
+**Para escalar a millones de usuarios:**
+1. **Load Balancer:** NGINX o AWS ALB para distribuir tráfico
+2. **Database Replicas:** Master para escrituras, replicas para lecturas
+3. **Redis Cache:** 70% de reducción en carga de base de datos
+4. **Auto-scaling:** Agregar instancias basado en CPU/memoria
+
+Ver documentación completa: [`SCALING.md`](./SCALING.md)
+
+---
 
 ## Autor
 

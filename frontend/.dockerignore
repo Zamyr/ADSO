@@ -1,0 +1,13 @@
+# Archivos excluidos de la imagen Docker
+node_modules
+npm-debug.log
+.next
+.env.local
+.env.test
+coverage
+.git
+.gitignore
+README.md
+*.test.ts
+*.test.tsx
+__tests__

@@ -10,6 +10,40 @@ Este archivo documenta dudas específicas, errores encontrados y consultas reali
 
 ---
 
+## 🔄 Refactorización Final: Eliminar Singleton Pattern
+
+**Fecha:** 11 de noviembre de 2025 (post-revisión de requisitos)
+
+**Problema identificado:** El challenge pedía "Scale horizontally" pero implementamos Singleton Pattern, que aunque no impide scaling, no era la mejor opción arquitectónica.
+
+**Decisión de refactorización:**
+- Eliminar clase `Database` con Singleton Pattern
+- Exportar `pool` directamente desde `database.js`
+- Eliminar `getInstance()` de `ProfileRepository`
+- Cada instancia del servidor tiene su propio pool (correcto para scaling horizontal)
+
+**Cambios realizados:**
+```javascript
+// Antes (Singleton)
+const db = Database.getInstance();
+const pool = db.getPool();
+
+// Después (Pool directo)
+import pool from './config/database.js';
+```
+
+**Beneficios:**
+- Código más simple y directo
+- Mejor naming (pool en lugar de Singleton confuso)
+- Cada instancia del servidor maneja su propio pool independientemente
+- Apropiado para load balancers y auto-scaling
+
+**Tests:** 23/23 siguen pasando ✅
+
+**Archivos modificados:** database.js, ProfileRepository.js, ProfileController.js, server.js, test-db.js, todos los tests
+
+---
+
 ## ❓ Consulta 1: Consistencia arquitectónica Frontend-Backend
 
 **Pregunta:** "Implementé Repository Pattern en el frontend con TypeScript. ¿Cómo mantengo la misma arquitectura en el backend pero adaptada a las necesidades del servidor (conexión a BD, manejo de transacciones)?"

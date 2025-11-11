@@ -1,6 +1,6 @@
 import ProfileController from '../../src/controllers/ProfileController.js';
 import ProfileRepository from '../../src/repositories/ProfileRepository.js';
-import Database from '../../src/config/database.js';
+import pool from '../../src/config/database.js';
 
 describe('ProfileController', () => {
   let controller;
@@ -10,7 +10,7 @@ describe('ProfileController', () => {
   let responseData;
 
   afterAll(async () => {
-    await Database.getInstance().getPool().end();
+    await pool.end();
   });
 
   beforeEach(() => {

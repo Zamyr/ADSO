@@ -1,17 +1,15 @@
-import Database from '../../src/config/database.js';
+import pool from '../../src/config/database.js';
 import ProfileRepository from '../../src/repositories/ProfileRepository.js';
 
 describe('ProfileRepository', () => {
   let repository;
-  let db;
 
   beforeAll(() => {
-    db = Database.getInstance();
-    repository = ProfileRepository.getInstance();
+    repository = new ProfileRepository();
   });
 
   afterAll(async () => {
-    await db.getPool().end();
+    await pool.end();
   });
 
   describe('getAll()', () => {

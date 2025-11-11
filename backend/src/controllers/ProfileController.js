@@ -2,7 +2,7 @@ import ProfileRepository from '../repositories/ProfileRepository.js';
 
 class ProfileController {
   constructor() {
-    this.repository = ProfileRepository.getInstance();
+    this.repository = new ProfileRepository();
   }
 
   async getAllProfiles(req, res) {

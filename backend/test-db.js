@@ -1,4 +1,4 @@
-import Database from './src/config/database.js';
+import pool, { testConnection } from './src/config/database.js';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -18,14 +18,12 @@ async function testDatabaseConnection() {
     database: process.env.DB_NAME
   });
   
-  const db = Database.getInstance();
-  const connected = await db.testConnection();
+  const connected = await testConnection();
   
   if (connected) {
     console.log('✅ Connection successful');
     
     try {
-      const pool = db.getPool();
       const [rows] = await pool.query('SELECT COUNT(*) as count FROM profiles');
       console.log(`✅ Found ${rows[0].count} profiles in database`);
     } catch (error) {
